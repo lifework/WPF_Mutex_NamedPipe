@@ -12,16 +12,15 @@ namespace WPF_Mutex_NamedPipe.Utilities
 {
     internal class NamedPipeServer : NamedPipeBase
     {
-        public static async Task ReceiveMessageAsync(Action<string> action)
+        public static async Task ReceiveMessageAsync(Action<Message?> action)
         {
             while (true)
             {
                 using var stream = new NamedPipeServerStream(PipeName);
                 await stream.WaitForConnectionAsync();
                 using var reader = new StreamReader(stream);
-                var message = await reader.ReadLineAsync();
-                Debug.WriteLine($"ReceiveMessage: {message}");
-                action(message);
+                var json = await reader.ReadToEndAsync();
+                action(Message.Deserialize(json));
             }
         }
     }

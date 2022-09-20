@@ -22,6 +22,7 @@ namespace WPF_Mutex_NamedPipe.ViewModels
 
         public bool IsServer => WPF_Mutex_NamedPipe.App.IsNamedPipeServer;
         public bool SendButtonEnabled => !IsServer;
+        public string SenderName => $"{Environment.ProcessId}";
 
         public void Dispose()
         {
@@ -33,7 +34,7 @@ namespace WPF_Mutex_NamedPipe.ViewModels
             RegionManager = regionManager;
             SendCommand = new DelegateCommand<object>(OnSendCommand);
 
-            Title.Value = $"WPF_Mutex_NamedPipe - {(IsServer ? "Server" : "Client")}";
+            Title.Value = $"{(IsServer ? "Server" : "Client")} - {SenderName}";
 
             Disposable.Add(Title);
             Disposable.Add(ReceivedMessage);
@@ -41,7 +42,7 @@ namespace WPF_Mutex_NamedPipe.ViewModels
 
             if (IsServer)
             {
-                Task.Run(() => NamedPipeServer.ReceiveMessageAsync(message => AppendReceivedMessage(message)));
+                Task.Run(() => NamedPipeServer.ReceiveMessageAsync(message => ProcessReceivedMessage(message)));
             }
         }
 
@@ -58,20 +59,24 @@ namespace WPF_Mutex_NamedPipe.ViewModels
             }
         }
 
-        private async Task<bool> SendPipedMessage(string message)
+        private async Task<bool> SendPipedMessage(string text)
         {
+            var message = new Message(SenderName, text);
             return await NamedPipeClient.SendMessageAsync(message);
         }
 
-        private bool AppendReceivedMessage(string message)
+        private bool ProcessReceivedMessage(Message? message)
         {
-            ReceivedMessage.Value += Now() + " " + message + "\n";
+            if (message != null)
+            {
+                ReceivedMessage.Value += $"[{Now()}][{message.Sender}] {message.Text}\n";
+            }
             return true;
         }
 
         private string Now()
         {
-            return "[" + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + "]";
+            return DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         }
     }
 }

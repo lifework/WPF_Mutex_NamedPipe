@@ -16,7 +16,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" Text="{Binding InputMessage.Value}"></TextBox>
+            <TextBox Grid.Column="0" Text="{Binding InputMessage.Value}" IsEnabled="{Binding SendButtonEnabled}"></TextBox>
             <Button Grid.Column="1" Content="Send" Width="100" Command="{Binding SendCommand}" IsEnabled="{Binding SendButtonEnabled}"></Button>
         </Grid>
     </Grid>
