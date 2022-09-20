@@ -10,7 +10,7 @@ namespace WPF_Mutex_NamedPipe.Utilities
 {
     internal class NamedPipeClient : NamedPipeBase
     {
-        private static async Task Client(string message)
+        public static async Task<bool> SendMessageAsync(string message)
         {
             using var stream = new NamedPipeClientStream(PipeName);
             await stream.ConnectAsync();
@@ -20,6 +20,8 @@ namespace WPF_Mutex_NamedPipe.Utilities
             Console.WriteLine($"Send");
             await writer.WriteLineAsync(message);
             Console.WriteLine($"Sent: {message}");
+
+            return true;
         }
     }
 }

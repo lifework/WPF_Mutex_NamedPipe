@@ -5,6 +5,8 @@ using Reactive.Bindings;
 using System;
 using System.Reactive.Disposables;
 using System.Security.Principal;
+using System.Threading.Tasks;
+using WPF_Mutex_NamedPipe.Utilities;
 
 namespace WPF_Mutex_NamedPipe.ViewModels
 {
@@ -18,6 +20,8 @@ namespace WPF_Mutex_NamedPipe.ViewModels
         public ReactivePropertySlim<string?> ReceivedMessage { get; set; } = new();
         public ReactivePropertySlim<string?> InputMessage { get; set; } = new();
 
+        public bool IsServer => WPF_Mutex_NamedPipe.App.IsNamedPipeServer;
+        public bool SendButtonEnabled => !IsServer;
 
         public void Dispose()
         {
@@ -29,9 +33,16 @@ namespace WPF_Mutex_NamedPipe.ViewModels
             RegionManager = regionManager;
             SendCommand = new DelegateCommand<object>(OnSendCommand);
 
+            Title.Value = $"WPF_Mutex_NamedPipe - {(IsServer ? "Server" : "Client")}";
+
             Disposable.Add(Title);
             Disposable.Add(ReceivedMessage);
             Disposable.Add(InputMessage);
+
+            if (IsServer)
+            {
+                Task.Run(() => NamedPipeServer.ReceiveMessageAsync(message => AppendReceivedMessage(message)));
+            }
         }
 
         private async void OnSendCommand(object parameter)
@@ -40,15 +51,21 @@ namespace WPF_Mutex_NamedPipe.ViewModels
             {
                 return;
             }
-            if (AppendReceivedMessage(InputMessage.Value))
+
+            if (await SendPipedMessage(InputMessage.Value))
             {
                 InputMessage.Value = "";
             }
         }
 
+        private async Task<bool> SendPipedMessage(string message)
+        {
+            return await NamedPipeClient.SendMessageAsync(message);
+        }
+
         private bool AppendReceivedMessage(string message)
         {
-            ReceivedMessage.Value += Now() + " " + InputMessage.Value + "\n";
+            ReceivedMessage.Value += Now() + " " + message + "\n";
             return true;
         }
 

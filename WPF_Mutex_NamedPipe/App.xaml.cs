@@ -14,15 +14,11 @@ namespace WPF_Mutex_NamedPipe
 
         private static readonly System.Threading.Mutex mutex = new Mutex(false, MutexName);
         private static bool HasMutexHandle = false;
-        public static bool IsNamedPipeServer = true;
+        public static bool IsNamedPipeServer => HasMutexHandle;
 
         private void GetMutexLock()
         {
             HasMutexHandle = mutex.WaitOne(0, false);
-            if (HasMutexHandle == false)
-            {
-                IsNamedPipeServer = false;
-            }
         }
 
         private void ReleaseMutexLock()
@@ -48,6 +44,7 @@ namespace WPF_Mutex_NamedPipe
         protected override void OnStartup(StartupEventArgs e)
         {
             GetMutexLock();
+            base.OnStartup(e);
         }
 
         protected override void OnExit(ExitEventArgs e)
