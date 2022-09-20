@@ -4,7 +4,20 @@
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title}" Height="350" Width="525" >
-    <Grid>
-        <ContentControl prism:RegionManager.RegionName="ContentRegion" />
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0" Text="{Binding Message}"></TextBox>
+        
+        <Grid Grid.Row="1" Height="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Text="{Binding InputForm}"></TextBox>
+            <Button Grid.Column="1" Content="Send" Width="100"></Button>
+        </Grid>
     </Grid>
 </Window>
