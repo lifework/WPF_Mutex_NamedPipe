@@ -1,0 +1,23 @@
+﻿<Window x:Class="WPF_Mutex_NamedPipe.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="{Binding Title}" Height="350" Width="525" >
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0" Text="{Binding ReceivedMessage.Value}" IsReadOnly="True"></TextBox>
+        
+        <Grid Grid.Row="1" Height="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Text="{Binding InputMessage.Value}" IsEnabled="{Binding SendButtonEnabled}"></TextBox>
+            <Button Grid.Column="1" Content="Send" Width="100" Command="{Binding SendCommand}" IsEnabled="{Binding SendButtonEnabled}"></Button>
+        </Grid>
+    </Grid>
+</Window>
